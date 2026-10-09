@@ -1539,10 +1539,7 @@ function Scan() {
 function App() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Home />}
-      />
+      <Route path="/" element={<Login />} />
 
       <Route
         path="/login"
@@ -1568,6 +1565,7 @@ function App() {
         path="/scan"
         element={<Scan />}
       />
+      <Route path="*" element={<Login />} />
     </Routes>
   );
 }
