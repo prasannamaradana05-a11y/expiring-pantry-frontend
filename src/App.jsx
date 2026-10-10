@@ -199,7 +199,7 @@ function Register() {
         form
       );
 
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       setMsg(
         error.response?.data?.message ||
@@ -1539,7 +1539,7 @@ function Scan() {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<Home />} />
 
       <Route
         path="/login"
