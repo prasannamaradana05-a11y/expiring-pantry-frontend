@@ -199,7 +199,7 @@ function Register() {
         form
       );
 
-      navigate("/");
+      navigate("/pantry");
     } catch (error) {
       setMsg(
         error.response?.data?.message ||
