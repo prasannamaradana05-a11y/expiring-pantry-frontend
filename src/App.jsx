@@ -1117,7 +1117,7 @@ function Scan() {
         formData
       );
 
-      console.log("Gemini Vision result:", response.data);
+      console.log("Groq Vision result:", response.data);
 
       const items = response.data.items || [];
 
@@ -1132,7 +1132,9 @@ function Scan() {
         quantity: item.quantity || 1,
         unit: item.unit || "pcs",
         category: item.category || "Other",
-        expiryDate: "",
+        expiryDate: typeof item.expiryDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(item.expiryDate) ? item.expiryDate : "",
+        expiryDateConfidence: item.expiryDateConfidence || "low",
+        expiryDateText: item.expiryDateText || "",
         selected: true
       }));
 
@@ -1438,6 +1440,12 @@ function Scan() {
                     }
                   />
 
+                  <small className="muted">
+                    {item.expiryDate
+                      ? "AI-read date (" + item.expiryDateConfidence + " confidence). Please verify it against the package."
+                      : "AI could not confidently read an expiry date" + (item.expiryDateText ? " (visible text: " + item.expiryDateText + ")" : "") + ". Enter it manually."}
+                  </small>
+
                 </label>
 
                 {/* CATEGORY */}
@@ -1523,7 +1531,7 @@ function Scan() {
 
         <p className="muted">
           <b>How it works:</b> The uploaded image is
-          analyzed by Gemini Vision AI. Detected food
+          analyzed by Groq Vision AI, including visible expiry dates. Detected food
           items are shown for review before being stored
           in MongoDB.
         </p>
