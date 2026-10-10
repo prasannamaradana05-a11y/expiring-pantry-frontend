@@ -1098,8 +1098,8 @@ function Scan() {
     import.meta.env.VITE_API_URL ||
     "http://localhost:5000/api";
 
-  const analyzeImage = async () => {
-    if (!file) {
+  const analyzeImage = async (imageFile = file) => {
+    if (!imageFile) {
       setMessage("Please select a food image first.");
       return;
     }
@@ -1110,7 +1110,7 @@ function Scan() {
 
     try {
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", imageFile);
 
       const response = await axios.post(
         API + "/vision/analyze",
@@ -1245,8 +1245,8 @@ function Scan() {
         </h2>
 
         <p className="muted">
-          Upload a grocery image and Vision AI will
-          identify visible food items automatically.
+          Upload a grocery image and Vision AI will automatically identify food items
+          and read visible expiry dates.
         </p>
 
         {/* UPLOAD */}
@@ -1269,12 +1269,15 @@ function Scan() {
             type="file"
             accept="image/*"
             onChange={(e) => {
-              setFile(
-                e.target.files?.[0] || null
-              );
-
+              const selectedFile = e.target.files?.[0] || null;
+              setFile(selectedFile);
               setMessage("");
               setDetectedItems([]);
+
+              if (selectedFile) {
+                // Start AI food and expiry-date detection immediately after upload.
+                analyzeImage(selectedFile);
+              }
             }}
           />
 
@@ -1293,7 +1296,7 @@ function Scan() {
           >
             {analyzing
               ? "🔄 Analyzing..."
-              : "🔍 Analyze with Vision AI"}
+              : "🔄 Analyze image again"}
           </button>
 
           {message && (
