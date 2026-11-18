@@ -1084,30 +1084,56 @@ function Recipes() {
     </Layout>
   );
 }
+
 function parseExpiryDateFromText(text) {
   if (typeof text !== "string" || !text.trim()) return "";
-  const labelled = text.match(/(?:EXP(?:IRY)?|BEST\\s*BEFORE|BB|USE\\s*BY|USE-BY|VALID\\s*UNTIL)\\s*[:.-]?\\s*(\\d{1,2}[\\/-]\\d{1,2}[\\/-]\\d{2,4}|\\d{1,2}\\s+[A-Za-z]{3,9}\\s+\\d{2,4}|[A-Za-z]{3,9}\\s+\\d{1,2},?\\s+\\d{2,4})/i);
+
+  const labelled = text.match(
+    /(?:EXP(?:IRY)?|BEST\s*BEFORE|BB|USE\s*BY|USE-BY|VALID\s*UNTIL)\s*[:.-]?\s*(\d{1,2}[./-]\d{1,2}[./-]\d{2,4}|\d{1,2}\s+[A-Za-z]{3,9}\s+\d{2,4}|[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{2,4})/i
+  );
+
   if (!labelled) return "";
+
   const value = labelled[1].trim();
   let year, month, day;
-  let m = value.match(/^(\\d{1,2})[\\/-](\\d{1,2})[\\/-](\\d{2,4})$/);
+
+  let m = value.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
+
   if (m) {
-    day = Number(m[1]); month = Number(m[2]); year = Number(m[3]);
+    day = Number(m[1]);
+    month = Number(m[2]);
+    year = Number(m[3]);
   } else {
-    m = value.match(/^(\\d{1,2})\\s+([A-Za-z]{3,9})\\s+(\\d{2,4})$/);
+    m = value.match(/^(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{2,4})$/);
+
     if (m) {
-      day = Number(m[1]); month = new Date(Date.parse(m[2] + " 1, 2000")).getMonth() + 1; year = Number(m[3]);
+      day = Number(m[1]);
+      month = new Date(Date.parse(m[2] + " 1, 2000")).getMonth() + 1;
+      year = Number(m[3]);
     } else {
-      m = value.match(/^([A-Za-z]{3,9})\\s+(\\d{1,2}),?\\s+(\\d{2,4})$/);
+      m = value.match(/^([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{2,4})$/);
+
       if (!m) return "";
-      month = new Date(Date.parse(m[1] + " 1, 2000")).getMonth() + 1; day = Number(m[2]); year = Number(m[3]);
+
+      month = new Date(Date.parse(m[1] + " 1, 2000")).getMonth() + 1;
+      day = Number(m[2]);
+      year = Number(m[3]);
     }
   }
+
   if (year < 100) year += year <= 79 ? 2000 : 1900;
+
   const date = new Date(Date.UTC(year, month - 1, day));
-  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return "";
-  return String(year).padStart(4, "0") + "-" + String(month).padStart(2, "0") + "-" + String(day).padStart(2, "0");
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) return "";
+
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
+
 
 function Scan() {
   const user = JSON.parse(
